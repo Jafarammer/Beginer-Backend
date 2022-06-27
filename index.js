@@ -1,8 +1,10 @@
 const express = require("express");
 const app = express();
-const port = 8000;
+const port = process.env.PORT || 8000;
 const cors = require("cors");
 const helmet = require("helmet");
+const dotenv = require("dotenv");
+dotenv.config();
 
 app.use(cors());
 app.use(helmet());
@@ -20,8 +22,11 @@ app.use(bodyParser.json());
 // app.use("/", userRoutes);
 
 // import routes users
-const userFindRoutes = require("./routes/user/searchUser");
-app.use("/", userFindRoutes);
+const userRoutes = require("./routes/user/user");
+app.use("/", userRoutes);
+
+// const userFindRoutes = require("./routes/user/searchUser");
+// app.use("/", userFindRoutes);
 
 // Import routes recipe
 const recipeRoutes = require("./routes/recipe");

@@ -1,15 +1,9 @@
 const express = require("express");
-const app = express();
-const port = 8000;
-const bodyParser = require("body-parser");
-const db = require("./db");
-
-app.use(bodyParser.json());
-// // parse application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({ extended: false }));
+const router = express.Router();
+const db = require("../config/db");
 
 // GET
-app.get("/comment", (req, res) => {
+router.get("/", (req, res) => {
   db.query("SELECT * FROM comment ORDER BY comment_id ASC", (err, result) => {
     if (err) {
       res.status(500).send("Internal server error");
@@ -23,7 +17,7 @@ app.get("/comment", (req, res) => {
 });
 
 // POST
-app.post("/comment/add", (req, res) => {
+router.post("/add", (req, res) => {
   const { username, comment_text } = req.body;
   db.query(
     "INSERT INTO comment(username,comment_text) VALUES ($1,$2)",
@@ -39,7 +33,7 @@ app.post("/comment/add", (req, res) => {
 });
 
 // Edit
-app.patch("/comment/edit", (req, res) => {
+router.patch("/edit", (req, res) => {
   const { username, comment_text, comment_id } = req.body;
   db.query(
     "SELECT * FROM comment WHERE comment_id = $1",
@@ -71,7 +65,7 @@ app.patch("/comment/edit", (req, res) => {
 });
 
 // DELETE
-app.delete("/comment/delete", (req, res) => {
+router.delete("/delete", (req, res) => {
   const { comment_id } = req.body;
   db.query(
     "DELETE FROM comment WHERE comment_id = $1",
@@ -86,6 +80,4 @@ app.delete("/comment/delete", (req, res) => {
   );
 });
 
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
-});
+module.exports = router;

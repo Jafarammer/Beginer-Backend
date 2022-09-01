@@ -1,11 +1,7 @@
 const Router = require("express").Router();
 const multer = require("multer");
 const path = require("path");
-// const router = express.Router();
-// const db = require("../config/db");
 const controllerRecipe = require("../constroller/recipe/recipeController");
-// const multer = require("multer");
-// const fs = require("../uploads");
 
 const multerStorage = multer.diskStorage({
   destination: (req, file, cb) => {

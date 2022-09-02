@@ -1,116 +1,81 @@
-const recipeModel = require("../../model/recipeModel");
-const multer = require("multer");
-const path = require("path");
-const db = require("../../config/db");
+const model = require("../../model/recipe/recipeModel");
+const searchModel = require("../../model/recipe/searchRecipeModel");
 
-const getAllRecipe = async (req, res) => {
-  try {
-    const getData = await recipeModel.recipeAllModel();
-    res.send({
-      data: getData.rows,
-      totalData: getData.rowCount,
-    });
-  } catch (err) {
-    console.log(`Errornya niih ${err}`);
-    res.status(400).send("Internal server error");
-  }
-};
-
-// FIND
-const getFindRecipe = async (req, res) => {
-  try {
-    const { title_recipe } = req.body;
-    const getData = await recipeModel.recipeByname(title_recipe);
-    res.send({
-      data: getData.rows,
-      totalData: getData.rowCount,
-    });
-  } catch (err) {
-    console.log(`Errornya disini ${err}`);
-    res.status(400).send("Internal server error");
-  }
-};
 // Add
 const addRecipe = async (req, res) => {
   try {
-    const { title_recipe, ingredients } = req.body;
-    const image_recipe = req.file.filename;
-
-    const addUser = await recipeModel.addRecipeModel({
+    const { title_recipe, ingredients, user_id } = req.body;
+    const addUser = await model.addRecipeModel({
       title_recipe,
       ingredients,
-      image_recipe,
+      user_id,
+      photo: req.file?.path,
     });
 
     if (addUser) {
       res.status(200).send("Data added successfully");
     } else {
-      res.status(400).send("Data failed to add");
+      res.status(400).send("Data failed to add!!!");
     }
   } catch (error) {
-    console.log(`Errornya disini nih ${error}`);
-    res.status(400).send("Internal server error");
+    res.status(400).send("Any error!!!");
   }
 };
-
+// Edit
 const editRecipe = async (req, res) => {
   try {
-    const { title_recipe, ingredients, id_recipe } = req.body;
-    const image_recipe = req.file.filename;
-    const getData = await recipeModel.recipeById(id_recipe);
-    if (getData.rowCount > 0) {
-      let titleInput = title_recipe || getData?.rows[0]?.title_recipe;
-      let titleIngredients = ingredients || getData?.rows[0]?.ingredients;
-      let titleImage = image_recipe || getData?.rows[0]?.image_recipe;
+    const { id } = req.params;
+    const { title_recipe, ingredients, user_id } = req.body;
+    const searchId = await searchModel.getRecipeId(id);
+    if (searchId?.rowCount > 0) {
+      let inputTitle = title_recipe || searchId?.rows[0]?.title_recipe;
+      let inputIngredients = ingredients || searchId?.rows[0]?.ingredients;
+      let inputUserId = user_id || searchId?.rows[0]?.user_id;
 
-      const editData = await recipeModel.editRecipeModel({
-        title_recipe: titleInput,
-        ingredients: titleIngredients,
-        image_recipe: titleImage,
-        id_recipe,
+      const editData = await model.editRecipeModel({
+        title_recipe: inputTitle,
+        ingredients: inputIngredients,
+        photo: req.file?.path,
+        user_id: inputUserId,
+        id,
       });
       if (editData) {
         res.send("Data changed successfully");
       } else {
-        res.send("Data failed to change");
+        res.send("Data failed to change!!!");
       }
     } else {
-      res.status(404).send("Data not found!");
+      res.status(404).send("Data not found!!!");
     }
-  } catch (err) {
-    console.log(`Hey errornya disini ${err}`);
-    res.status(500).send("Internal server error");
+  } catch (error) {
+    res.status(500).send("Any error");
   }
 };
 
 const deleteRecipe = async (req, res) => {
   try {
-    const { id_recipe } = req.body;
+    const { id } = req.params;
 
-    // Check user by id
-    const getData = await recipeModel.recipeById(id_recipe);
+    const searchId = await searchModel.getRecipeId(id);
 
-    if (getData.rowCount > 0) {
-      const delRecipe = await recipeModel.deleteRecipeModel(id_recipe);
+    if (searchId?.rowCount > 0) {
+      const delRecipe = await model.deleteRecipeModel(id);
 
       if (delRecipe) {
         res.send("Data deleted successfully");
       } else {
-        res.status(400).send("Data failed to delete");
+        res.status(400).send("Data failed to delete!!!");
       }
     } else {
-      res.status(404).send("Data not found");
+      res.status(404).send("Data not found!!!");
     }
   } catch (error) {
-    res.status(500).send("Internal server error");
+    res.status(500).send("Any error");
   }
 };
 
 module.exports = {
-  getAllRecipe,
-  getFindRecipe,
   addRecipe,
   editRecipe,
   deleteRecipe,
-  // upload
 };

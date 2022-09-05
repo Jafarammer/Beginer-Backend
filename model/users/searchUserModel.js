@@ -3,7 +3,7 @@ const db = require("../../config/db");
 // All users
 const getAllUsers = () => {
   return new Promise((resolve, rejects) => {
-    db.query("SELECT * FROM users ORDER BY id ASC", (error, result) => {
+    db.query("SELECT * FROM users ORDER BY id DESC", (error, result) => {
       if (error) {
         rejects(error);
       } else {
@@ -75,21 +75,21 @@ const getModelPage = (page, size) => {
 };
 
 // masih tidak paham
-// const getSort = (sortType) => {
-//   return new Promise((resolve, rejects) => {
-//     db.query(
-//       "SELECT * FROM users ORDER BY id = $1 DESC",
-//       [sortType],
-//       (error, result) => {
-//         if (error) {
-//           rejects(error);
-//         } else {
-//           resolve(result);
-//         }
-//       }
-//     );
-//   });
-// };
+const getSort = () => {
+  return new Promise((resolve, rejects) => {
+    db.query(
+      "SELECT * FROM users ORDER BY id ASC",
+      [sortType],
+      (error, result) => {
+        if (error) {
+          rejects(error);
+        } else {
+          resolve(result);
+        }
+      }
+    );
+  });
+};
 
 module.exports = {
   getAllUsers,
@@ -97,5 +97,5 @@ module.exports = {
   getUserId,
   getUsersEmail,
   getModelPage,
-  // getSort,
+  getSort,
 };

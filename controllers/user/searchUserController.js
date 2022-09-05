@@ -77,28 +77,26 @@ const findPage = async (req, res) => {
 };
 
 // masih tidak paham
-// const findSort = async (req, res) => {
-//   try {
-//     const sortType = req.query;
-//     if ((sortType = desc)) {
-//       const getDataDesc = await searchModel.getSort(sortType);
-//       res.send({
-//         data: getDataDesc.rows,
-//         total: getDataDesc.rowCount,
-//       });
-//     } else {
-//       const getData = await searchModel.getAllUsers();
-//       res.send({
-//         data: getData.rows,
-//         total: getData.rowCount,
-//       });
-
-//     }
-//   } catch (error) {
-//     console.log(error);
-//     res.status(400).send("Any error");
-//   }
-// };
+const findSort = async (req, res) => {
+  try {
+    if (req.query.orderType === "asc") {
+      const getAsc = searchModel.getSort();
+      res.send({
+        data: getAsc.rows,
+        total: getAsc.rowCount,
+      });
+    } else {
+      const getDesc = searchModel.getAllUsers();
+      res.send({
+        data: getDesc.rows,
+        total: getDesc.rowCount,
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(400).send("Any error");
+  }
+};
 
 module.exports = {
   allUser,
@@ -106,5 +104,5 @@ module.exports = {
   findUserId,
   findUserEmail,
   findPage,
-  // findSort,
+  findSort,
 };

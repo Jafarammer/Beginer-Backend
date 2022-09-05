@@ -7,6 +7,6 @@ Router.get("/id/:id", controller.findUserId);
 Router.get("/email", controller.findUserEmail);
 Router.get("/pagination", controller.findPage);
 // masih tidak paham
-// Router.get("/sort", controller.findSort);
+Router.get("/sort", controller.findSort);
 
 module.exports = Router;
